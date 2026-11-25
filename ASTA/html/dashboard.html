@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#050102">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" type="image/png" href="../assets/img/clover_logo.png?v=2">
+    <link rel="apple-touch-icon" href="../assets/img/clover_logo.png?v=2">
+    <title>Automated Sensor Tracking Application — A.S.T.A.</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://db.onlinewebfonts.com/c/8cb707a9b8a73f8a7403336b861c3074?family=BubbledotICG-FinePos" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="../css/variables.css?v=37">
+    <link rel="stylesheet" href="../css/animations.css?v=37">
+    <link rel="stylesheet" href="../css/dashboard.css?v=37">
+</head>
+<body>
+    <!-- FONDO HÍBRIDO: VIDEO CLOUDFRONT + LAS 4 ESPADAS DE ASTA EN ESTILO MANGA MONOCROMÁTICO -->
+    <div class="bg">
+        <video class="bg-video" autoplay muted loop playsinline>
+            <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260809_012548_ef22562c-c0ae-4816-ad9d-f8922af4e6a7.mp4" type="video/mp4">
+        </video>
+        <div class="bg-manga-swords"></div>
+        <div class="bg-screentone"></div>
+    </div>
+    <canvas id="antimagic-particles"></canvas>
+
+    <div class="dashboard-viewport">
+        <!-- ==================================================================
+             1) HEADER FLOTANTE (LOGO BLANCO + PÍLDORA BLANCA CON 3 PUNTOS + USUARIO)
+             ================================================================== -->
+        <header class="evolve-header">
+            <button type="button" class="logo-circle-btn" data-filter-tab="all" aria-label="ASTA Home">
+                <img src="../assets/img/clover_logo.png?v=2" alt="A.S.T.A." onerror="this.src='../assets/img/clover_logo_ref.jpg'">
+            </button>
+
+            <nav class="white-nav-pill" aria-label="Navegación Principal">
+                <button type="button" class="white-nav-link active" data-filter-tab="all">Inicio</button>
+                <button type="button" class="white-nav-link" data-filter-tab="hydration">Hidratación</button>
+                <button type="button" class="white-nav-link" data-filter-tab="sleep">Sueño</button>
+                <button type="button" class="white-nav-link" data-filter-tab="gym">Gimnasio</button>
+                <button type="button" class="white-nav-link" data-filter-tab="nutrition">Comidas</button>
+                <button type="button" class="white-nav-link" data-filter-tab="watch">Watch</button>
+            </nav>
+
+            <div class="header-user-actions" style="display: flex; align-items: center; gap: 8px;">
+                <button type="button" class="dark-signin-pill js-goto-profile" data-filter-tab="profile" title="Abrir mi perfil">
+                    <img id="nav-user-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23180406'/><circle cx='50' cy='38' r='18' fill='%23ff1a2d'/><path d='M20 88 C20 64, 80 64, 80 88' fill='%23ff1a2d'/></svg>" alt="" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid #ff1a2d;">
+                    <span id="nav-username">Asta_Staria</span>
+                    <span id="nav-user-level-badge" class="nav-level-chip">NV. 1</span>
+                </button>
+                <button type="button" class="dark-signin-pill" onclick="logoutGrimoire()" title="Cerrar Sesión" style="padding: 0 14px;">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </div>
+
+            <!-- Botón Hamburguesa Móvil (≤720px) -->
+            <button type="button" class="mobile-burger-btn" id="mobile-burger-btn" aria-expanded="false" aria-label="Menú">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+        </header>
+
+        <!-- Menú Móvil Sheet Blanco (≤720px) -->
+        <div class="mobile-menu-overlay" id="mobile-menu-overlay" hidden>
+            <div class="mobile-white-sheet">
+                <button type="button" class="mobile-sheet-link active" data-filter-tab="all">Inicio</button>
+                <button type="button" class="mobile-sheet-link" data-filter-tab="hydration">Hidratación</button>
+                <button type="button" class="mobile-sheet-link" data-filter-tab="sleep">Sueño</button>
+                <button type="button" class="mobile-sheet-link" data-filter-tab="gym">Gimnasio</button>
+                <button type="button" class="mobile-sheet-link" data-filter-tab="nutrition">Comidas</button>
+                <button type="button" class="mobile-sheet-link" data-filter-tab="watch">Watch</button>
+                <button type="button" class="mobile-sheet-link" data-filter-tab="profile">Mi Perfil</button>
+                <button type="button" class="mobile-sheet-signin" onclick="logoutGrimoire()">
+                    Cerrar Sesión
+                </button>
+            </div>
+        </div>
+
+        <!-- ==================================================================
+             2) HERO + 4 DOT-MATRIX STATS FOOTER (<, %, *, #)
+             ================================================================== -->
+        <section class="dashboard-hero-center">
+            <!-- Headline Dot-Matrix (BubbledotICG-FinePos) -->
+            <h1 class="dot-headline">
+                <span class="line">Automated Sensor</span>
+                <span class="line">Tracking Application</span>
+            </h1>
+
+            <p class="evolve-subhead anim" style="--d: 0.28s;">
+                Sincroniza tus datos, mejora tus hábitos y supera tus límites
+            </p>
+        </section>
+
+        <!-- ==================================================================
+             3) GRID PRINCIPAL DE PANELES INTERACTIVOS
+             ================================================================== -->
+        <main class="dashboard-main">
+            <div class="panels-grid">
+
+                <!-- ==========================================================
+                     PANEL 1: HIDRATACIÓN
+                     ========================================================== -->
+                <section class="panel-box panel-col-6 filterable-panel" data-panel-category="hydration">
+                    <div class="panel-header">
+                        <div class="panel-title-group">
+                            <h3>Hidratación</h3>
+                        </div>
+                    </div>
+
+                    <div class="hydration-interactive-layout">
+                        <div class="thermos-40oz-container">
+                            <div class="thermos-lid-sensor">
+                                <span class="ultrasonic-eye"></span>
+                                <span class="ultrasonic-eye"></span>
+                            </div>
+                            <div class="thermos-body-vessel">
+                                <div class="ultrasonic-beam-line" id="thermos-ultrasonic-beam"></div>
+                                <div class="thermos-water-fill" id="thermos-liquid-fill" style="height: 81%;"></div>
+                                <div class="thermos-scale-marks">
+                                    <span>40 oz</span>
+                                    <span>30 oz</span>
+                                    <span>20 oz</span>
+                                    <span>10 oz</span>
+                                </div>
+                                <div class="thermos-center-readout">
+                                    <strong id="thermos-oz-readout">32.5 oz</strong>
+                                    <small id="thermos-ml-readout">960 / 1183 ml (81%)</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hydration-controls-col">
+                            <div class="sensor-telemetry-strip">
+                                <div class="telemetry-mini-box">
+                                    <span>Distancia</span>
+                                    <strong id="hc-sr04-cm-val">12.0 cm</strong>
+                                </div>
+                                <div class="telemetry-mini-box">
+                                    <span>Nivel Termo</span>
+                                    <strong id="thermos-level-oz-val">40.0 / 40 oz</strong>
+                                </div>
+                                <div class="telemetry-mini-box">
+                                    <span>Total Hoy</span>
+                                    <strong id="hydration-daily-total-val">0 ml</strong>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="slider-thermos-ml">Nivel del Termo</label>
+                                <input type="range" id="slider-thermos-ml" class="manga-range-slider" min="0" max="1183" step="10" value="1183">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="slider-ultrasonic-cm" id="label-slider-ultrasonic-cm">Distancia Sensor (12 cm = Lleno 100% • 34 cm = Vacío)</label>
+                                <input type="range" id="slider-ultrasonic-cm" class="manga-range-slider" min="12.0" max="34.0" step="0.5" value="12.0">
+                            </div>
+
+                            <div class="quick-water-btns">
+                                <button type="button" class="cta-glow-pill" onclick="quickAddWater(250, false)" style="padding: 9px 12px; font-size: 12.5px;">
+                                    +250 ml
+                                </button>
+                                <button type="button" class="cta-glow-pill" onclick="quickAddWater(500, false)" style="padding: 9px 12px; font-size: 12.5px;">
+                                    +500 ml
+                                </button>
+                                <button type="button" class="dark-signin-pill" onclick="quickAddWater(0, true)" style="justify-content: center; height: 38px; font-size: 12.5px;">
+                                    Llenar 40oz
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 style="font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 8px;">
+                            Historial
+                        </h4>
+                        <div class="records-list" id="hydration-records-list"></div>
+                    </div>
+                </section>
+
+                <!-- ==========================================================
+                     PANEL 2: SUEÑO
+                     ========================================================== -->
+                <section class="panel-box panel-col-6 filterable-panel" data-panel-category="sleep">
+                    <div class="panel-header">
+                        <div class="panel-title-group">
+                            <h3>Sueño</h3>
+                        </div>
+                        <span class="pill-badge" id="ldr-room-state-badge">Oscuridad Óptima</span>
+                    </div>
+
+                    <div class="ldr-ambient-meter">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 12.5px; color: #c4c2c3;">
+                                Luz: <strong id="ldr-adc-val" style="color: #fff;">245 ADC</strong>
+                            </span>
+                            <strong id="ldr-darkness-pct" style="color: #fff; font-size: 13.5px;">
+                                94.0% Oscuridad
+                            </strong>
+                        </div>
+
+                        <div class="ldr-gradient-bar">
+                            <div class="ldr-indicator-pin" id="ldr-bar-pin" style="left: 6%;"></div>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 4px;">
+                            <label for="slider-ldr-adc">Nivel de Luz</label>
+                            <input type="range" id="slider-ldr-adc" class="manga-range-slider" min="0" max="4095" step="15" value="245">
+                        </div>
+                    </div>
+
+                    <form id="form-add-sleep" class="inline-form-grid">
+                        <div class="form-group">
+                            <label for="sleep-hours-input">Horas de Sueño</label>
+                            <input type="number" id="sleep-hours-input" class="manga-input" step="0.1" min="1" max="16" value="7.8" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="sleep-quality-input">Calidad (%)</label>
+                            <input type="number" id="sleep-quality-input" class="manga-input" min="10" max="100" value="92" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="sleep-deep-input">Sueño Profundo (hrs)</label>
+                            <input type="number" id="sleep-deep-input" class="manga-input" step="0.1" min="0" max="10" value="2.4">
+                        </div>
+                        <div class="form-group">
+                            <label for="sleep-rem-input">Sueño REM (hrs)</label>
+                            <input type="number" id="sleep-rem-input" class="manga-input" step="0.1" min="0" max="10" value="1.9">
+                        </div>
+                        <div class="form-group">
+                            <label for="sleep-source-select">Fuente</label>
+                            <select id="sleep-source-select" class="manga-input">
+                                <option value="esp32_ldr">Sensor LDR</option>
+                                <option value="galaxy_watch">Galaxy Watch</option>
+                                <option value="manual">Manual</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="justify-content: flex-end;">
+                            <button type="submit" class="cta-glow-pill" style="width: 100%;">
+                                Guardar Sueño
+                            </button>
+                        </div>
+                    </form>
+
+                    <div>
+                        <h4 style="font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 8px;">
+                            Historial
+                        </h4>
+                        <div class="records-list" id="sleep-records-list"></div>
+                    </div>
+                </section>
+
+                <!-- ==========================================================
+                     PANEL 3: COMIDAS
+                     ========================================================== -->
+                <section class="panel-box panel-col-6 filterable-panel" data-panel-category="nutrition">
+                    <div class="panel-header">
+                        <div class="panel-title-group">
+                            <h3>Comidas</h3>
+                        </div>
+                    </div>
+
+                    <div class="macros-pills-grid">
+                        <div class="macro-stat-pill">
+                            <small>Calorías</small>
+                            <strong id="macro-tot-cal">1175 kcal</strong>
+                        </div>
+                        <div class="macro-stat-pill">
+                            <small>Proteínas</small>
+                            <strong id="macro-tot-prot">96.0 g</strong>
+                        </div>
+                        <div class="macro-stat-pill">
+                            <small>Carbohidratos</small>
+                            <strong id="macro-tot-carbs">126.0 g</strong>
+                        </div>
+                        <div class="macro-stat-pill">
+                            <small>Grasas</small>
+                            <strong id="macro-tot-fat">29.5 g</strong>
+                        </div>
+                    </div>
+
+                    <div class="ai-scanner-grid">
+                        <div>
+                            <input type="file" id="ai-food-file-input" accept="image/*" style="display: none;">
+                            <div class="food-dropzone" id="ai-food-dropzone">
+                                <div class="scanner-laser-line"></div>
+                                <img id="food-preview-img" alt="Vista previa">
+                                <div id="dropzone-placeholder">
+                                    <i class="fa-solid fa-camera" style="font-size: 24px; margin-bottom: 8px; color: #fff;"></i>
+                                    <strong style="font-size: 13.5px; display: block; color: #fff;">
+                                        Subir Foto o Usar Cámara
+                                    </strong>
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="margin-top: 10px;">
+                                <label for="ai-food-preset-select">Platillos frecuentes</label>
+                                <select id="ai-food-preset-select" class="manga-input">
+                                    <option value="">-- Seleccionar platillo --</option>
+                                    <option value="0">Pechuga de Pollo Grill con Arroz y Brócoli</option>
+                                    <option value="1">Corte de Res Magro con Papa y Aguacate</option>
+                                    <option value="2">Omelette de 4 Huevos con Espinaca y Tostada</option>
+                                    <option value="3">Batido Whey Protein con Avena y Plátano</option>
+                                    <option value="4">Orden de 4 Tacos de Carne Asada con Guacamole</option>
+                                    <option value="5">Filete de Salmón al Grill con Quinoa</option>
+                                    <option value="6">Pasta Integral con Carne Molida Magra</option>
+                                    <option value="7">Bowl Proteico de Pollo, Quinoa y Mix Verde</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <form id="form-save-nutrition" class="inline-form-grid">
+                            <div class="form-group full-span">
+                                <label for="nut-food-name">Alimento</label>
+                                <input type="text" id="nut-food-name" class="manga-input" placeholder="Ej. Pechuga de Pollo con Arroz" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="nut-meal-type">Comida</label>
+                                <select id="nut-meal-type" class="manga-input">
+                                    <option value="Desayuno">Desayuno</option>
+                                    <option value="Almuerzo" selected>Almuerzo</option>
+                                    <option value="Post-Entreno">Post-Entreno</option>
+                                    <option value="Cena">Cena</option>
+                                    <option value="Snack">Snack</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="nut-calories">Calorías (kcal)</label>
+                                <input type="number" id="nut-calories" class="manga-input" placeholder="640" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="nut-protein">Proteína (g)</label>
+                                <input type="number" step="0.1" id="nut-protein" class="manga-input" placeholder="52" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="nut-carbs">Carbohidratos (g)</label>
+                                <input type="number" step="0.1" id="nut-carbs" class="manga-input" placeholder="68" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="nut-fat">Grasas (g)</label>
+                                <input type="number" step="0.1" id="nut-fat" class="manga-input" placeholder="14" required>
+                            </div>
+                            <input type="hidden" id="nut-confidence" value="Escáner IA">
+                            <div class="form-group full-span">
+                                <button type="submit" class="cta-glow-pill" style="width: 100%;">
+                                    Guardar Comida
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div>
+                        <h4 style="font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 8px;">
+                            Historial
+                        </h4>
+                        <div class="records-list" id="nutrition-records-list"></div>
+                    </div>
+                </section>
+
+                <!-- ==========================================================
+                     PANEL 4: GIMNASIO (ANILLO 4/4 + SPLITS UPPER/LOWER + REGISTRO RÁPIDO + FAB SMARTWATCH)
+                     ========================================================== -->
+                <section class="panel-box panel-col-6 filterable-panel" data-panel-category="gym">
+                    <div class="panel-header">
+                        <div class="panel-title-group">
+                            <h3>Gimnasio</h3>
+                        </div>
+                        <span class="pill-badge" id="gym-total-volume-badge">Volumen: 5,290 kg</span>
+                    </div>
+
+                    <!-- 1. ANILLO DE PROGRESO SEMANAL (LÓGICA 4/4 = 100% CON GLOW #a855f7) -->
+                    <div class="gym-weekly-ring-card" id="gym-weekly-ring-card">
+                        <div class="gym-ring-visual-wrap">
+                            <svg class="gym-ring-svg" width="132" height="132" viewBox="0 0 132 132">
+                                <defs>
+                                    <linearGradient id="gymRingCrimsonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#ff1a2d" />
+                                        <stop offset="100%" stop-color="#99000c" />
+                                    </linearGradient>
+                                    <linearGradient id="gymRingPurpleGlowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#c084fc" />
+                                        <stop offset="55%" stop-color="#a855f7" />
+                                        <stop offset="100%" stop-color="#ff1a2d" />
+                                    </linearGradient>
+                                </defs>
+                                <circle class="gym-ring-track" cx="66" cy="66" r="52"></circle>
+                                <circle class="gym-ring-progress" id="gym-ring-progress-circle" cx="66" cy="66" r="52" stroke-dasharray="326.73" stroke-dashoffset="81.68"></circle>
+                            </svg>
+                            <div class="gym-ring-center-label">
+                                <strong id="gym-ring-pct">75%</strong>
+                                <span id="gym-ring-fraction">3 / 4</span>
+                            </div>
+                        </div>
+
+                        <div class="gym-ring-info-col">
+                            <div class="gym-ring-title-row">
+                                <h4>Anillo Semanal (Split 4 Días)</h4>
+                                <span class="gym-ring-status-chip" id="gym-ring-status-chip">En progreso</span>
+                            </div>
+                            <p class="gym-ring-desc">
+                                Cada entrenamiento completado suma <strong>+25%</strong>. Al completar <strong>4/4 sesiones</strong> desbloqueas el estado máximo.
+                            </p>
+
+                            <div class="gym-ring-steps-bar" id="gym-ring-steps-bar">
+                                <button type="button" class="gym-step-pill" data-gym-step="1">1 • 25%</button>
+                                <button type="button" class="gym-step-pill" data-gym-step="2">2 • 50%</button>
+                                <button type="button" class="gym-step-pill" data-gym-step="3">3 • 75%</button>
+                                <button type="button" class="gym-step-pill" data-gym-step="4">4 • 100%</button>
+                            </div>
+
+                            <div class="gym-ring-actions">
+                                <button type="button" id="btn-gym-complete-workout" class="cta-glow-pill" style="height: 36px; padding: 0 14px; font-size: 12px;">
+                                    + Completar Sesión (+25%)
+                                </button>
+                                <button type="button" id="btn-gym-reset-ring" class="dark-signin-pill" style="height: 36px; padding: 0 12px; font-size: 11.5px;">
+                                    Reiniciar 0/4
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. TARJETAS DE SPLIT INTERACTIVAS (ACORDEÓN UPPER BODY & LOWER BODY) -->
+                    <div class="gym-splits-container">
+                        <!-- TARJETA SPLIT 1: UPPER BODY -->
+                        <div class="gym-split-card expanded" data-split-card="upper">
+                            <button type="button" class="gym-split-header" data-split-toggle="upper" aria-expanded="true">
+                                <div class="gym-split-title-wrap">
+                                    <span class="gym-split-icon"><i class="fa-solid fa-dumbbell"></i></span>
+                                    <div>
+                                        <h4>Upper Body</h4>
+                                        <small>Pecho • Espalda • Hombros • Brazos</small>
+                                    </div>
+                                </div>
+                                <div class="gym-split-meta">
+                                    <span class="gym-split-counter" id="gym-upper-progress-badge">0 / 4 listos</span>
+                                    <i class="fa-solid fa-chevron-down gym-split-chevron"></i>
+                                </div>
+                            </button>
+
+                            <div class="gym-split-body">
+                                <div class="gym-split-inner">
+                                    <div class="gym-exercises-head">
+                                        <span>Ejercicio</span>
+                                        <span>Peso (kg)</span>
+                                        <span>Reps</span>
+                                    </div>
+                                    <div class="gym-exercise-list" id="gym-list-upper"></div>
+
+                                    <div class="gym-add-custom-row">
+                                        <input type="text" id="gym-custom-name-upper" class="manga-input" placeholder="+ Agregar ejercicio a Upper Body...">
+                                        <button type="button" class="dark-signin-pill" data-add-custom-split="upper" style="height: 38px; padding: 0 14px; font-size: 12px;">
+                                            Añadir
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TARJETA SPLIT 2: LOWER BODY -->
+                        <div class="gym-split-card" data-split-card="lower">
+                            <button type="button" class="gym-split-header" data-split-toggle="lower" aria-expanded="false">
+                                <div class="gym-split-title-wrap">
+                                    <span class="gym-split-icon"><i class="fa-solid fa-bolt"></i></span>
+                                    <div>
+                                        <h4>Lower Body</h4>
+                                        <small>Cuádriceps • Isquiotibiales • Glúteo • Core</small>
+                                    </div>
+                                </div>
+                                <div class="gym-split-meta">
+                                    <span class="gym-split-counter" id="gym-lower-progress-badge">0 / 4 listos</span>
+                                    <i class="fa-solid fa-chevron-down gym-split-chevron"></i>
+                                </div>
+                            </button>
+
+                            <div class="gym-split-body">
+                                <div class="gym-split-inner">
+                                    <div class="gym-exercises-head">
+                                        <span>Ejercicio</span>
+                                        <span>Peso (kg)</span>
+                                        <span>Reps</span>
+                                    </div>
+                                    <div class="gym-exercise-list" id="gym-list-lower"></div>
+
+                                    <div class="gym-add-custom-row">
+                                        <input type="text" id="gym-custom-name-lower" class="manga-input" placeholder="+ Agregar ejercicio a Lower Body...">
+                                        <button type="button" class="dark-signin-pill" data-add-custom-split="lower" style="height: 38px; padding: 0 14px; font-size: 12px;">
+                                            Añadir
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Historial de series guardadas en Base de Datos -->
+                    <div>
+                        <h4 style="font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 8px;">
+                            Historial Reciente
+                        </h4>
+                        <div class="records-list" id="gym-records-list"></div>
+                    </div>
+
+                    <!-- 4. BOTÓN FLOTANTE / INFERIOR DE SINCRONIZACIÓN DE SMARTWATCH -->
+                    <div class="gym-fab-container">
+                        <button type="button" id="btn-gym-sync-smartwatch" class="gym-smartwatch-fab">
+                            <span class="gym-fab-icon-wrap" id="gym-fab-sync-icon">
+                                <i class="fa-solid fa-arrows-rotate"></i>
+                            </span>
+                            <span>Sincronizar Smartwatch</span>
+                        </button>
+                    </div>
+                </section>
+
+                <!-- ==========================================================
+                     PANEL 5: WATCH
+                     ========================================================== -->
+                <section class="panel-box panel-col-12 filterable-panel" data-panel-category="watch">
+                    <div class="panel-header">
+                        <div class="panel-title-group">
+                            <h3>Watch</h3>
+                        </div>
+                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            <button type="button" id="btn-connect-watch-ble" class="cta-glow-pill">
+                                Conectar Watch
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="watch-panel-layout">
+                        <div class="galaxy-watch-face">
+                            <div class="watch-bezel-ticks"></div>
+                            <span style="font-size: 10px; color: var(--muted); text-transform: uppercase;">
+                                WATCH
+                            </span>
+                            <div class="watch-steps-big" id="watch-face-steps">8,420</div>
+                            <span style="font-size: 11px; color: #c4c2c3;">PASOS HOY</span>
+                            <div class="watch-bpm-live">
+                                <span class="animate-heartbeat">♥</span>
+                                <span id="watch-face-bpm">68 BPM</span>
+                            </div>
+                            <span id="watch-stat-battery" style="font-size: 10.5px; color: var(--muted); margin-top: 4px;">
+                                BAT: 86%
+                            </span>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 16px;">
+                            <div class="macros-pills-grid">
+                                <div class="macro-stat-pill">
+                                    <small>Distancia</small>
+                                    <strong id="watch-stat-km">6.35 km</strong>
+                                </div>
+                                <div class="macro-stat-pill">
+                                    <small>Calorías Activas</small>
+                                    <strong id="watch-stat-kcal">640 kcal</strong>
+                                </div>
+                                <div class="macro-stat-pill">
+                                    <small>Sueño</small>
+                                    <strong id="watch-stat-sleep">7.8 hrs</strong>
+                                </div>
+                                <div class="macro-stat-pill">
+                                    <small>SpO2</small>
+                                    <strong id="watch-stat-spo2">98%</strong>
+                                </div>
+                            </div>
+
+                            <form id="form-sync-watch" class="inline-form-grid watch-sync-form-grid">
+                                <div class="form-group">
+                                    <label for="watch-input-steps">Pasos</label>
+                                    <input type="number" id="watch-input-steps" class="manga-input" min="0" max="100000" value="8420">
+                                </div>
+                                <div class="form-group">
+                                    <label for="watch-input-bpm">BPM</label>
+                                    <input type="number" id="watch-input-bpm" class="manga-input" min="40" max="220" value="68">
+                                </div>
+                                <div class="form-group">
+                                    <label for="watch-input-sleep-min">Sueño (min)</label>
+                                    <input type="number" id="watch-input-sleep-min" class="manga-input" min="0" max="1000" value="468">
+                                </div>
+                                <div class="form-group">
+                                    <label for="watch-input-spo2">SpO2 (%)</label>
+                                    <input type="number" id="watch-input-spo2" class="manga-input" min="80" max="100" value="98">
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="cta-glow-pill" style="width: 100%;">
+                                        Sincronizar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==========================================================
+                     PANEL DE GRÁFICAS DE PROGRESO (SEMANAL / MENSUAL / ANUAL) + INGENIERÍA DE DATOS
+                     ========================================================== -->
+                <section class="panel-box panel-col-12" id="habits-progress-panel">
+                    <div class="panel-header progress-chart-header">
+                        <div class="panel-title-group">
+                            <h3 id="progress-panel-title">Progreso</h3>
+                            <p>Series temporales, desviación estándar, tendencia móvil y exportación de datasets</p>
+                        </div>
+
+                        <div class="progress-filters-bar">
+                            <div class="chart-pill-selector" id="chart-habit-selector" role="tablist">
+                                <button type="button" class="chart-filter-btn active" data-chart-habit="all">Todos</button>
+                                <button type="button" class="chart-filter-btn" data-chart-habit="hydration">Hidratación</button>
+                                <button type="button" class="chart-filter-btn" data-chart-habit="sleep">Sueño</button>
+                                <button type="button" class="chart-filter-btn" data-chart-habit="gym">Gimnasio</button>
+                                <button type="button" class="chart-filter-btn" data-chart-habit="nutrition">Comidas</button>
+                                <button type="button" class="chart-filter-btn" data-chart-habit="watch">Watch</button>
+                            </div>
+
+                            <div class="chart-pill-selector" id="chart-period-selector" role="tablist">
+                                <button type="button" class="chart-filter-btn active" data-chart-period="weekly">Semanal</button>
+                                <button type="button" class="chart-filter-btn" data-chart-period="monthly">Mensual</button>
+                                <button type="button" class="chart-filter-btn" data-chart-period="yearly">Anual</button>
+                            </div>
+
+                            <div class="eng-export-actions">
+                                <button type="button" class="eng-action-btn eng-action-primary" id="btn-download-weekly-top" title="Descargar archivo completo con toda la información recolectada en la semana (PC y Móvil)">
+                                    <i class="fa-solid fa-download"></i> Descargar Semana
+                                </button>
+                                <button type="button" class="eng-action-btn" id="btn-export-csv" title="Descargar hoja de cálculo semanal en CSV (Excel / Móvil)">
+                                    <i class="fa-solid fa-file-csv"></i> Excel / CSV
+                                </button>
+                                <button type="button" class="eng-action-btn" id="btn-export-json" title="Descargar respaldo completo en JSON">
+                                    <i class="fa-solid fa-code"></i> JSON
+                                </button>
+                                <button type="button" class="eng-action-btn" id="btn-export-pdf-report" title="Abrir versión imprimible / Guardar como PDF">
+                                    <i class="fa-solid fa-file-pdf"></i> Imprimir / PDF
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="progress-stats-grid" id="progress-stats-grid"></div>
+
+                    <!-- Tira de Correlación Biométrica y Analítica Estadística Cruzada -->
+                    <div class="biometric-correlation-grid" id="biometric-correlation-grid">
+                        <div class="bio-metric-card">
+                            <span class="bio-metric-label"><i class="fa-solid fa-fire"></i> Balance Energético Neto</span>
+                            <strong id="bio-net-calories-val">+535 kcal</strong>
+                            <small id="bio-net-calories-sub">Ingesta 1175 kcal vs Gasto Activo 640 kcal</small>
+                        </div>
+                        <div class="bio-metric-card">
+                            <span class="bio-metric-label"><i class="fa-solid fa-moon"></i> Correlación Luz LDR / Sueño</span>
+                            <strong id="bio-ldr-sleep-corr">r = 0.94 (Óptima)</strong>
+                            <small id="bio-ldr-sleep-sub">94.0% Oscuridad → 92% Eficiencia REM/Profundo</small>
+                        </div>
+                        <div class="bio-metric-card">
+                            <span class="bio-metric-label"><i class="fa-solid fa-chart-line"></i> Desviación Estándar y Tendencia</span>
+                            <strong id="bio-std-dev-val">σ = ±12.4%</strong>
+                            <small id="bio-std-dev-sub">Estabilidad de hábito en ventana activa</small>
+                        </div>
+                        <div class="bio-metric-card">
+                            <span class="bio-metric-label"><i class="fa-solid fa-bullseye"></i> Índice Global de Cumplimiento</span>
+                            <strong id="bio-global-compliance">82.6%</strong>
+                            <small id="bio-global-compliance-sub">Ponderación multi-sensor de 5 módulos</small>
+                        </div>
+                    </div>
+
+                    <div class="progress-canvas-wrapper">
+                        <canvas id="habits-progress-canvas"></canvas>
+                        <div class="chart-hover-tooltip" id="chart-hover-tooltip" hidden></div>
+                    </div>
+
+                    <!-- CENTRO DE DESCARGA DE INFORMACIÓN RECOLECTADA EN LA SEMANA (PC Y MÓVIL) -->
+                    <div class="weekly-dossier-card" id="weekly-dossier-card">
+                        <div class="weekly-dossier-header">
+                            <div class="weekly-dossier-title-wrap">
+                                <span class="weekly-dossier-badge">
+                                    <i class="fa-solid fa-calendar-check"></i> Bitácora Semanal Recolectada • PC y Móvil
+                                </span>
+                                <h4>Descargar Toda la Información de la Semana</h4>
+                                <p id="weekly-dossier-date-range">
+                                    Recopilación de los últimos 7 días: Hidratación (Termo 40oz), Sueño (LDR), Gimnasio, Comidas, Smartwatch y Progreso RPG.
+                                </p>
+                            </div>
+
+                            <div class="weekly-dossier-actions">
+                                <button type="button" id="btn-download-weekly-html" class="cta-glow-pill weekly-main-download-btn">
+                                    <i class="fa-solid fa-file-arrow-down"></i>
+                                    <span>Descargar Archivo Semanal (PC / Móvil)</span>
+                                </button>
+                                <button type="button" id="btn-download-weekly-csv" class="eng-action-btn">
+                                    <i class="fa-solid fa-file-excel"></i>
+                                    <span>Guardar Excel (.CSV)</span>
+                                </button>
+                                <button type="button" id="btn-download-weekly-txt" class="eng-action-btn">
+                                    <i class="fa-solid fa-file-lines"></i>
+                                    <span>Guardar Nota (.TXT)</span>
+                                </button>
+                                <button type="button" id="btn-share-weekly-mobile" class="eng-action-btn">
+                                    <i class="fa-solid fa-mobile-screen-button"></i>
+                                    <span>Compartir en Móvil</span>
+                                </button>
+                                <button type="button" id="btn-toggle-weekly-preview" class="eng-action-btn">
+                                    <i class="fa-solid fa-table-list"></i>
+                                    <span id="weekly-preview-toggle-label">Ver tabla de la semana</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Resumen acumulado de los 7 días -->
+                        <div class="weekly-dossier-kpis" id="weekly-dossier-kpis"></div>
+
+                        <!-- Vista previa desplegable día por día (7 días) -->
+                        <div class="weekly-dossier-preview" id="weekly-dossier-preview" hidden>
+                            <div class="weekly-table-scroll">
+                                <table class="weekly-breakdown-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Día / Fecha</th>
+                                            <th>Hidratación</th>
+                                            <th>Sueño (LDR)</th>
+                                            <th>Gimnasio</th>
+                                            <th>Comidas</th>
+                                            <th>Smartwatch</th>
+                                            <th>Cumplimiento</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="weekly-breakdown-tbody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==========================================================
+                     PANEL 6: MI PERFIL DE USUARIO + GAMIFICACIÓN RPG DE HÁBITOS
+                     ========================================================== -->
+                <section class="panel-box panel-col-12 filterable-panel" id="user-profile-panel" data-panel-category="profile" style="display: none;">
+                    <div class="panel-header">
+                        <div class="panel-title-group">
+                            <h3>Mi Perfil</h3>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <button type="button" id="btn-profile-download-weekly" class="eng-action-btn eng-action-primary" title="Descargar archivo con toda tu información recolectada en la semana">
+                                <i class="fa-solid fa-file-arrow-down"></i> Descargar Resumen Semanal
+                            </button>
+                            <span class="pill-badge" id="profile-header-level-pill">NV. 0 • 0 XP</span>
+                        </div>
+                    </div>
+
+                    <!-- GUÍA INTERACTIVA DE PRIMERA VEZ (VISIBLE ÚNICAMENTE CUANDO LA CUENTA ES NUEVA) -->
+                    <div class="profile-onboarding-guide" id="profile-first-time-guide" hidden>
+                        <div class="profile-onboarding-top">
+                            <div class="profile-onboarding-title-group">
+                                <span class="profile-onboarding-step-pill" id="onboarding-step-badge">
+                                    <i class="fa-solid fa-compass"></i> Guía de Cuenta Nueva • Paso 1 de 4
+                                </span>
+                                <h4 id="onboarding-step-title">¡Bienvenido a tu Perfil (Nivel 0)!</h4>
+                            </div>
+                            <button type="button" class="profile-onboarding-dismiss" id="btn-onboarding-dismiss" title="No volver a mostrar esta guía">
+                                Omitir guía ✕
+                            </button>
+                        </div>
+
+                        <p class="profile-onboarding-desc" id="onboarding-step-desc">
+                            Tu cuenta empieza limpia en <strong>Nivel 0 (0 XP)</strong> sin datos ni rutinas de otras cuentas. A continuación te mostramos los campos que debes llenar manualmente por primera vez.
+                        </p>
+
+                        <div class="profile-onboarding-checklist" id="onboarding-fields-summary">
+                            <div class="onboarding-field-chip is-active" data-guide-step="0">
+                                <i class="fa-solid fa-weight-scale"></i> 1. Peso Actual y Meta (kg)
+                            </div>
+                            <div class="onboarding-field-chip" data-guide-step="1">
+                                <i class="fa-solid fa-envelope-open-text"></i> 2. Link Exclusivo por Correo
+                            </div>
+                            <div class="onboarding-field-chip" data-guide-step="2">
+                                <i class="fa-solid fa-bottle-water"></i> 3. Medidas de tu Termo
+                            </div>
+                            <div class="onboarding-field-chip" data-guide-step="3">
+                                <i class="fa-solid fa-bullseye"></i> 4. Metas Diarias y Foto
+                            </div>
+                        </div>
+
+                        <div class="profile-onboarding-footer">
+                            <span class="profile-onboarding-note">
+                                <i class="fa-solid fa-circle-info"></i> Este recorrido solo aparece esta primera vez al crear tu cuenta.
+                            </span>
+                            <div class="profile-onboarding-actions">
+                                <button type="button" class="eng-action-btn" id="btn-onboarding-prev" disabled>
+                                    <i class="fa-solid fa-arrow-left"></i> Anterior
+                                </button>
+                                <button type="button" class="cta-glow-pill onboarding-next-btn" id="btn-onboarding-next">
+                                    <span>Siguiente paso</span> <i class="fa-solid fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- HUD DE GAMIFICACIÓN RPG: NIVEL, BARRA XP, RACHAS, ATRIBUTOS, PESO (KG) Y RÉCORDS DE GYM -->
+                    <div class="rpg-gamification-wrapper">
+                        <!-- Barra Superior de Nivel, Rango y Racha Activa -->
+                        <div class="rpg-hero-banner">
+                            <div class="rpg-level-crest">
+                                <span class="rpg-level-tag">NIVEL</span>
+                                <strong id="rpg-level-number">0</strong>
+                            </div>
+
+                            <div class="rpg-xp-main">
+                                <div class="rpg-xp-header">
+                                    <div>
+                                        <h4 id="rpg-rank-title" class="rpg-rank-title">Novato • Nivel 0</h4>
+                                        <span id="rpg-xp-next-hint" class="rpg-xp-sub">Faltan 500 XP para alcanzar el Nivel 1</span>
+                                    </div>
+                                    <span id="rpg-xp-text" class="rpg-xp-counter">0 / 500 XP</span>
+                                </div>
+                                <div class="rpg-xp-bar-track">
+                                    <div id="rpg-xp-fill" class="rpg-xp-bar-fill" style="width: 0%;"></div>
+                                </div>
+                            </div>
+
+                            <div class="rpg-streak-pills">
+                                <div class="rpg-mini-kpi">
+                                    <span class="rpg-kpi-icon"><i class="fa-solid fa-fire-flame-simple"></i></span>
+                                    <div>
+                                        <strong id="rpg-streak-days">0 Días</strong>
+                                        <small>Racha Activa</small>
+                                    </div>
+                                </div>
+                                <div class="rpg-mini-kpi">
+                                    <span class="rpg-kpi-icon"><i class="fa-solid fa-trophy"></i></span>
+                                    <div>
+                                        <strong id="rpg-best-streak">0 Días</strong>
+                                        <small>Mejor Racha</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3 Columnas estilo Videojuego: 1) Atributos RPG, 2) Progreso de Peso (kg), 3) Marcas PR de Gimnasio -->
+                        <div class="rpg-cards-grid">
+                            <!-- Tarjeta 1: Estadísticas y Mejoras del Personaje -->
+                            <div class="rpg-card">
+                                <div class="rpg-card-head">
+                                    <h4><i class="fa-solid fa-bolt" style="color:#ff1a2d;"></i> Atributos y Mejoras</h4>
+                                    <span class="rpg-chip">Escala 0 - 99</span>
+                                </div>
+
+                                <div class="rpg-stats-list">
+                                    <div class="rpg-stat-row">
+                                        <div class="rpg-stat-label">
+                                            <span><strong>STR</strong> • Fuerza (PRs Gimnasio)</span>
+                                            <strong id="rpg-stat-str-val">0 / 99</strong>
+                                        </div>
+                                        <div class="rpg-stat-track"><div id="rpg-stat-str-bar" class="rpg-stat-fill" style="width:0%;"></div></div>
+                                    </div>
+
+                                    <div class="rpg-stat-row">
+                                        <div class="rpg-stat-label">
+                                            <span><strong>VIT</strong> • Vitalidad (Agua y Peso kg)</span>
+                                            <strong id="rpg-stat-vit-val">0 / 99</strong>
+                                        </div>
+                                        <div class="rpg-stat-track"><div id="rpg-stat-vit-bar" class="rpg-stat-fill" style="width:0%;"></div></div>
+                                    </div>
+
+                                    <div class="rpg-stat-row">
+                                        <div class="rpg-stat-label">
+                                            <span><strong>REC</strong> • Recuperación (Sueño)</span>
+                                            <strong id="rpg-stat-rec-val">0 / 99</strong>
+                                        </div>
+                                        <div class="rpg-stat-track"><div id="rpg-stat-rec-bar" class="rpg-stat-fill" style="width:0%;"></div></div>
+                                    </div>
+
+                                    <div class="rpg-stat-row">
+                                        <div class="rpg-stat-label">
+                                            <span><strong>AGI</strong> • Agilidad (Pasos Watch)</span>
+                                            <strong id="rpg-stat-agi-val">0 / 99</strong>
+                                        </div>
+                                        <div class="rpg-stat-track"><div id="rpg-stat-agi-bar" class="rpg-stat-fill" style="width:0%;"></div></div>
+                                    </div>
+
+                                    <div class="rpg-stat-row">
+                                        <div class="rpg-stat-label">
+                                            <span><strong>DSC</strong> • Disciplina (Rachas y Comidas)</span>
+                                            <strong id="rpg-stat-dsc-val">0 / 99</strong>
+                                        </div>
+                                        <div class="rpg-stat-track"><div id="rpg-stat-dsc-bar" class="rpg-stat-fill" style="width:0%;"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tarjeta 2: Evolución de Peso Corporal (kg) -->
+                            <div class="rpg-card" id="rpg-weight-card">
+                                <div class="rpg-card-head">
+                                    <h4><i class="fa-solid fa-weight-scale" style="color:#ff1a2d;"></i> Progreso de Peso (kg)</h4>
+                                    <span class="rpg-chip" id="rpg-weight-diff-badge">Sin registrar</span>
+                                </div>
+
+                                <div class="rpg-weight-kpis">
+                                    <div class="rpg-weight-box">
+                                        <small>Inicial</small>
+                                        <strong id="rpg-weight-init">-- kg</strong>
+                                    </div>
+                                    <div class="rpg-weight-box active">
+                                        <small>Actual</small>
+                                        <strong id="rpg-weight-curr">-- kg</strong>
+                                    </div>
+                                    <div class="rpg-weight-box">
+                                        <small>Meta</small>
+                                        <strong id="rpg-weight-goal">-- kg</strong>
+                                    </div>
+                                </div>
+
+                                <div class="rpg-weight-form">
+                                    <div class="rpg-weight-inputs">
+                                        <div>
+                                            <label for="rpg-input-weight">Nuevo Peso (kg)</label>
+                                            <input type="number" step="0.1" id="rpg-input-weight" class="manga-input" placeholder="Ej. 74.8">
+                                        </div>
+                                        <div>
+                                            <label for="rpg-input-goal-weight">Meta (kg)</label>
+                                            <input type="number" step="0.1" id="rpg-input-goal-weight" class="manga-input" placeholder="Ej. 70.0">
+                                        </div>
+                                    </div>
+                                    <button type="button" id="btn-log-weight-xp" class="cta-glow-pill" style="width: 100%; height: 40px; font-size: 12.5px;">
+                                        Registrar Peso y Reclamar XP
+                                    </button>
+                                </div>
+
+                                <div class="rpg-mini-log-list" id="rpg-weight-history-list"></div>
+                            </div>
+
+                            <!-- Tarjeta 3: Récords Superados en Gimnasio (PRs) y Logros -->
+                            <div class="rpg-card">
+                                <div class="rpg-card-head">
+                                    <h4><i class="fa-solid fa-dumbbell" style="color:#ff1a2d;"></i> Récords en Gimnasio (PR)</h4>
+                                    <span class="rpg-chip">+180 XP por Récord</span>
+                                </div>
+
+                                <div class="rpg-prs-list" id="rpg-gym-prs-list"></div>
+
+                                <div class="rpg-badges-title">Logros y Mejoras Desbloqueadas</div>
+                                <div class="rpg-badges-grid" id="rpg-achievements-grid"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-settings-divider">
+                        <span>Configuración de Cuenta y Sensores</span>
+                    </div>
+
+                    <!-- Banner Glassy de Seguridad: Requiere Link Exclusivo enviado al Correo Enlazado para Modificar Datos -->
+                    <div class="profile-security-lock-banner" id="profile-edit-lock-banner">
+                        <div class="profile-lock-top">
+                            <div class="profile-lock-info">
+                                <span class="profile-lock-badge is-locked" id="profile-lock-status-badge">
+                                    <i class="fa-solid fa-lock"></i> Edición Protegida
+                                </span>
+                                <p id="profile-lock-desc">
+                                    Para modificar tu nombre de usuario, correo, foto o metas del perfil, envía una solicitud a tu correo enlazado (<strong id="profile-linked-email-label">asta@blackbulls.clover</strong>) para recibir un <strong>enlace exclusivo de autorización</strong>.
+                                </p>
+                            </div>
+                            <div class="profile-lock-actions">
+                                <button type="button" id="btn-request-profile-edit-link" class="cta-glow-pill profile-unlock-btn">
+                                    <i class="fa-solid fa-paper-plane"></i>
+                                    <span>Enviar link exclusivo a mi correo</span>
+                                </button>
+                                <button type="button" id="btn-lock-profile-now" class="dark-signin-pill profile-relock-btn" style="display: none;">
+                                    <i class="fa-solid fa-lock"></i>
+                                    <span>Bloquear edición</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Bandeja / Confirmación del Enlace Exclusivo Enviado al Correo Enlazado -->
+                        <div class="profile-exclusive-mail-box" id="profile-edit-email-sent-box" style="display: none;">
+                            <div class="profile-mail-box-header">
+                                <span><i class="fa-solid fa-envelope-circle-check" style="color:#ff1a2d;"></i> <strong id="profile-mail-sent-title">Correo enviado con tu enlace exclusivo</strong></span>
+                                <button type="button" id="btn-close-profile-mail-box" class="profile-mail-close-btn" title="Cerrar aviso">✕</button>
+                            </div>
+                            <p id="profile-mail-sent-sub">
+                                Se ha enviado un enlace único de modificación (válido por 20 minutos) a tu cuenta de correo enlazada. Haz clic en el enlace exclusivo para desbloquear la edición de tus datos:
+                            </p>
+                            <div class="profile-exclusive-link-row">
+                                <a href="#" id="profile-exclusive-link-anchor" class="profile-exclusive-link-pill">
+                                    <i class="fa-solid fa-key"></i>
+                                    <span id="profile-exclusive-link-text">Abrir enlace exclusivo para modificar datos del perfil</span>
+                                </a>
+                                <button type="button" id="btn-copy-profile-exclusive-link" class="eng-action-btn" title="Copiar URL del enlace exclusivo">
+                                    <i class="fa-solid fa-copy"></i> Copiar Link
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form id="form-user-profile" class="profile-panel-grid is-profile-locked">
+                        <!-- Columna Izquierda: Foto de Perfil y Token ESP32 -->
+                        <div class="profile-avatar-card">
+                            <div class="profile-avatar-preview-wrap">
+                                <img id="profile-avatar-preview" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23111'/><circle cx='50' cy='38' r='18' fill='%23eee'/><path d='M20 88 C20 64, 80 64, 80 88' fill='%23eee'/></svg>" alt="Foto de Perfil">
+                            </div>
+
+                            <input type="file" id="profile-avatar-input" class="js-profile-editable-field" accept="image/*" style="display: none;" disabled>
+                            <button type="button" id="btn-trigger-avatar-upload" class="cta-glow-pill js-profile-editable-field" style="width: 100%; font-size: 12.5px;" onclick="document.getElementById('profile-avatar-input').click()" disabled>
+                                Cambiar Foto de Perfil
+                            </button>
+
+                            <div style="width: 100%; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 12px; margin-top: 4px; text-align: left;">
+                                <span style="font-size: 11px; color: var(--muted); display: block;">
+                                    Token Personal ESP32:
+                                </span>
+                                <code id="user-api-token-display" style="font-size: 12px; color: #fff; word-break: break-all; display: block; margin: 4px 0 10px 0;">
+                                    ASTA-ESP32-BLACKBULLS-777
+                                </code>
+                                <button type="button" class="dark-signin-pill" style="width: 100%; justify-content: center; height: 38px; font-size: 12.5px;" onclick="copyEsp32Token()">
+                                    Copiar Token ESP32
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Columna Derecha: Campos de Usuario, Contraseña por Correo, Termo 40oz y Metas -->
+                        <div class="inline-form-grid">
+                            <div class="form-group">
+                                <label for="prof-username">Nombre de Usuario</label>
+                                <input type="text" id="prof-username" class="manga-input js-profile-editable-field" required disabled>
+                            </div>
+                            <div class="form-group">
+                                <label for="prof-email">Correo Electrónico Enlazado</label>
+                                <input type="email" id="prof-email" class="manga-input js-profile-editable-field" required disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>Cambiar Contraseña</label>
+                                <button type="button" id="btn-send-pwd-email" class="dark-signin-pill" style="width: 100%; justify-content: center; height: 42px; font-size: 13px; border-color: rgba(255, 26, 45, 0.45);">
+                                    <i class="fa-solid fa-envelope" style="color: #ff1a2d;"></i>
+                                    <span>Enviar correo para cambiar contraseña</span>
+                                </button>
+                            </div>
+                            <div class="form-group">
+                                <label for="prof-gemini-key">Google Gemini API Key (Opcional - Para más adelante)</label>
+                                <input type="password" id="prof-gemini-key" class="manga-input js-profile-editable-field" placeholder="Sin API Key por ahora (Escáner Local Activo)" disabled>
+                            </div>
+
+                            <!-- Caja desplegable tras enviar el mensaje al correo -->
+                            <div id="pwd-reset-verify-box" class="form-group full-span" style="display: none; background: rgba(255, 255, 255, 0.055); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.16); border-radius: 14px; padding: 14px; margin-bottom: 4px;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; flex-wrap: wrap;">
+                                    <span id="pwd-reset-email-notice" style="font-size: 12.5px; color: #f5d0d6;">
+                                        Se envió un mensaje con el código de seguridad a tu correo electrónico.
+                                    </span>
+                                    <button type="button" id="btn-cancel-pwd-reset" style="background: transparent; border: none; color: rgba(255,255,255,0.6); cursor: pointer; font-size: 12px;">
+                                        Cancelar ✕
+                                    </button>
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: end;" class="pwd-verify-grid">
+                                    <div>
+                                        <label for="prof-reset-code" style="display: block; font-size: 11.5px; margin-bottom: 4px; color: var(--muted);">Código enviado al correo</label>
+                                        <input type="text" id="prof-reset-code" class="manga-input" placeholder="Ej. 482910" maxlength="8">
+                                    </div>
+                                    <div>
+                                        <label for="prof-reset-new-password" style="display: block; font-size: 11.5px; margin-bottom: 4px; color: var(--muted);">Nueva Contraseña</label>
+                                        <input type="password" id="prof-reset-new-password" class="manga-input" placeholder="Mínimo 6 caracteres">
+                                    </div>
+                                    <button type="button" id="btn-confirm-pwd-reset" class="cta-glow-pill" style="height: 42px; padding: 0 18px; font-size: 13px; white-space: nowrap;">
+                                        Confirmar Cambio
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-group" id="prof-group-thermos-ml">
+                                <label for="prof-thermos-ml">Capacidad Termo 40oz (ml)</label>
+                                <input type="number" id="prof-thermos-ml" class="manga-input js-profile-editable-field" value="1183" required disabled>
+                            </div>
+                            <div class="form-group" id="prof-group-thermos-dim">
+                                <label for="prof-thermos-height">Distancia Vacío (cm) / Distancia Lleno Inicial HC-SR04 (cm)</label>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                                    <input type="number" step="0.5" id="prof-thermos-height" class="manga-input js-profile-editable-field" value="34.0" title="Distancia máxima cuando el termo está vacío (cm)" disabled>
+                                    <input type="number" step="0.1" id="prof-sensor-offset" class="manga-input js-profile-editable-field" value="12.0" title="Distancia inicial cuando el termo está 100% lleno (cm)" disabled>
+                                </div>
+                            </div>
+                            <div class="form-group" id="prof-group-water-goal">
+                                <label for="prof-water-goal">Meta Diaria de Agua (ml)</label>
+                                <input type="number" id="prof-water-goal" class="manga-input js-profile-editable-field" value="3000" required disabled>
+                            </div>
+                            <div class="form-group" id="prof-group-cal-step-goal">
+                                <label for="prof-cal-goal">Meta Calorías (kcal) / Meta Pasos</label>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                                    <input type="number" id="prof-cal-goal" class="manga-input js-profile-editable-field" value="2500" title="Meta de calorías" disabled>
+                                    <input type="number" id="prof-step-goal" class="manga-input js-profile-editable-field" value="10000" title="Meta de pasos" disabled>
+                                </div>
+                            </div>
+
+                            <div class="form-group full-span" style="margin-top: 8px;">
+                                <button type="submit" id="btn-save-profile-submit" class="cta-glow-pill js-profile-editable-field" style="width: 100%;" disabled>
+                                    <i class="fa-solid fa-lock" id="btn-save-profile-icon"></i>
+                                    <span id="btn-save-profile-label">Solicita el link exclusivo por correo para modificar y guardar datos</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+
+            </div>
+        </main>
+
+        <!-- COMPAÑERO LIEBE EN ESQUINA INFERIOR DERECHA (VISIBLE SOLO EN MI PERFIL: SIN FONDO, SOLO PERSONAJE Y DIÁLOGO MANGA) -->
+        <div class="liebe-profile-companion" id="liebe-profile-companion" hidden aria-live="polite">
+            <div class="liebe-manga-bubble" id="liebe-manga-bubble">
+                <div class="liebe-bubble-top">
+                    <span class="liebe-speaker-tag">LIEBE</span>
+                    <button type="button" class="liebe-next-dialogue-btn" id="btn-liebe-next-tip" title="Siguiente diálogo">
+                        Siguiente <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+                <p class="liebe-dialogue-text" id="liebe-dialogue-text">
+                    ¡Oye! Tus estadísticas van subiendo bien. Mantén tu racha y superemos esos récords.
+                </p>
+            </div>
+
+            <button type="button" class="liebe-character-trigger" id="btn-liebe-character" title="Hablar con Liebe">
+                <img id="liebe-profile-sprite" src="../assets/img/liebe_happy.png?v=27" alt="Liebe">
+            </button>
+        </div>
+
+        <!-- ==================================================================
+             4) FOOTER DE MÉTRICAS RESUMEN CON GLIFOS DOT-MATRIX (<, %, *, #)
+             ================================================================== -->
+        <footer class="evolve-stats-footer dashboard-bottom-stats">
+            <div class="stat-item anim" style="--d: 0.5s;">
+                <span class="stat-glyph">&lt;</span>
+                <span class="stat-number" id="kpi-water-val">1783ml</span>
+                <span class="stat-label">Hidratación (<span id="kpi-water-oz">60.3 oz</span> / <span id="kpi-water-goal">3000 ml</span>)</span>
+            </div>
+            <div class="stat-item anim" style="--d: 0.58s;">
+                <span class="stat-glyph">%</span>
+                <span class="stat-number" id="kpi-sleep-darkness">94.0%</span>
+                <span class="stat-label">Sueño (<span id="kpi-sleep-val">7.8</span>h • <span id="kpi-sleep-quality">92%</span>)</span>
+            </div>
+            <div class="stat-item anim" style="--d: 0.66s;">
+                <span class="stat-glyph">*</span>
+                <span class="stat-number" id="kpi-cal-val">1175kcal</span>
+                <span class="stat-label">Comidas (<span id="kpi-protein-sub">Prot: 96g</span>)</span>
+            </div>
+            <div class="stat-item anim" style="--d: 0.74s;">
+                <span class="stat-glyph">#</span>
+                <span class="stat-number" id="kpi-steps-val">8,420</span>
+                <span class="stat-label">Watch (<span id="kpi-watch-bpm">♥ 68 BPM</span>)</span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="../js/particles.js?v=37"></script>
+    <script src="../js/ai-nutrition.js?v=37"></script>
+    <script src="../js/galaxy-watch.js?v=37"></script>
+    <script src="../js/dashboard.js?v=37"></script>
+</body>
+</html>

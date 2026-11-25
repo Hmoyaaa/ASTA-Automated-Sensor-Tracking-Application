@@ -1,0 +1,395 @@
+/* ==========================================================================
+   ASTA - auth.css
+   Tarjeta Vertical Glassy Translúcida + Inicio de Sesión con Google +
+   Transición Centrada Suave Sin Cambios Bruscos
+   ========================================================================== */
+
+.login-page-viewport {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: clamp(20px, 3.5vh, 38px) clamp(16px, 3vw, 32px) clamp(16px, 2.8vh, 28px);
+    position: relative;
+    z-index: 2;
+    gap: 20px;
+}
+
+.hero-grimoire-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+/* ==========================================================================
+   TARJETA VERTICAL ÚNICA GLASSY (DEJA VER EL FONDO DIFUMINADO POR DETRÁS)
+   ========================================================================== */
+.auth-glass-card {
+    width: 100%;
+    max-width: 432px;
+    padding: 28px 28px 24px;
+    border-radius: 28px;
+    background: linear-gradient(
+        150deg,
+        rgba(30, 8, 14, 0.42) 0%,
+        rgba(10, 2, 5, 0.54) 100%
+    );
+    backdrop-filter: blur(22px) saturate(165%);
+    -webkit-backdrop-filter: blur(22px) saturate(165%);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.22),
+        inset 0 0 0 1px rgba(255, 36, 56, 0.12),
+        0 26px 65px rgba(0, 0, 0, 0.62),
+        0 0 42px rgba(230, 0, 18, 0.14);
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    animation: cardFadeUp 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Destello superior especular + carmesí en el borde del cristal */
+.auth-glass-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 14%;
+    right: 14%;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.45),
+        rgba(255, 26, 45, 0.7),
+        rgba(255, 255, 255, 0.45),
+        transparent
+    );
+    pointer-events: none;
+}
+
+@keyframes cardFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.985);
+        filter: blur(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+/* ==========================================================================
+   CABECERA DE MARCA DENTRO DE LA TARJETA
+   ========================================================================== */
+.auth-card-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.auth-clover-badge {
+    width: 78px;
+    height: 78px;
+    border-radius: 50%;
+    background: rgba(14, 3, 6, 0.48);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1.5px solid rgba(255, 50, 70, 0.55);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        0 0 26px rgba(230, 0, 18, 0.38);
+    display: grid;
+    place-items: center;
+    margin-bottom: 10px;
+    overflow: hidden;
+    padding: 0;
+}
+
+.auth-clover-logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+}
+
+.auth-brand-title {
+    font-family: var(--font-display);
+    font-size: 1.9rem;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+    line-height: 1.05;
+}
+
+.auth-brand-subtitle {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: rgba(235, 215, 218, 0.72);
+    margin-top: 5px;
+    text-align: center;
+}
+
+/* ==========================================================================
+   SELECTOR DE PESTAÑAS TIPO PÍLDORA GLASSY
+   ========================================================================== */
+.auth-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 16px;
+    background: rgba(16, 4, 8, 0.42);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    padding: 4px;
+    border-radius: 999px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 4px 16px rgba(0, 0, 0, 0.35);
+    position: relative;
+    z-index: 2;
+}
+
+.auth-tab-btn {
+    position: relative;
+    background: transparent;
+    border: none;
+    color: rgba(242, 213, 217, 0.72);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 13px;
+    padding: 9px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.25s ease;
+}
+
+.auth-tab-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.auth-tab-btn.active {
+    color: #ffffff;
+    background: linear-gradient(135deg, rgba(230, 0, 18, 0.46) 0%, rgba(120, 0, 10, 0.58) 100%);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.22),
+        0 0 14px rgba(255, 26, 45, 0.25);
+}
+
+/* ==========================================================================
+   VIEWPORT DE ALTURA FIJA + TEXTOS CENTRADOS + TRANSICIÓN SIN CAMBIOS BRUSCOS
+   ========================================================================== */
+.auth-forms-viewport {
+    position: relative;
+    height: 282px;
+}
+
+.auth-form {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.985);
+    filter: blur(6px);
+    pointer-events: none;
+    transition:
+        opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        filter 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        visibility 0s linear 0.45s;
+}
+
+.auth-form.active {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+    filter: blur(0);
+    pointer-events: auto;
+    transition:
+        opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        filter 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        visibility 0s linear 0s;
+}
+
+.auth-fields-stack {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 4px;
+}
+
+.form-group label {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(246, 232, 235, 0.88);
+    text-align: center;
+    width: 100%;
+}
+
+.manga-input {
+    width: 100%;
+    padding: 10.5px 14px;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 13px;
+    color: #ffffff;
+    font-family: var(--font-sans);
+    font-size: 13.5px;
+    text-align: center;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.manga-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+    text-align: center;
+}
+
+.manga-input:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.09);
+    border-color: rgba(255, 42, 62, 0.72);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.14),
+        0 0 0 3px rgba(230, 0, 18, 0.18);
+}
+
+.auth-submit-btn {
+    width: 100%;
+    margin-top: 8px;
+    flex-shrink: 0;
+}
+
+/* ==========================================================================
+   AVISO DE CUENTA REGISTRADA OBLIGATORIA Y CAMBIO DE MODO
+   ========================================================================== */
+.auth-account-notice {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.auth-account-notice span {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    color: rgba(242, 220, 224, 0.76);
+    line-height: 1.4;
+}
+
+.auth-switch-link-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    color: #ffffff;
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 8px 18px;
+    cursor: pointer;
+    transition: all 0.22s ease;
+}
+
+.auth-switch-link-btn:hover {
+    background: rgba(255, 26, 45, 0.24);
+    border-color: rgba(255, 42, 62, 0.65);
+    transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   PIE DE PÁGINA CON EL TÍTULO EN UN SOLO PÁRRAFO
+   ========================================================================== */
+.login-bottom-title-bar {
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+.login-clean-headline {
+    font-size: clamp(15px, 2.5vw, 34px);
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin: 0;
+    width: 100%;
+    text-align: center;
+    opacity: 0.92;
+}
+
+.login-clean-headline .line {
+    white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+    .login-page-viewport {
+        padding: 16px 14px 18px;
+        gap: 14px;
+    }
+
+    .auth-glass-card {
+        padding: 22px 18px 18px;
+        border-radius: 22px;
+    }
+
+    .auth-clover-badge {
+        width: 68px;
+        height: 68px;
+        margin-bottom: 8px;
+    }
+
+    .auth-brand-title {
+        font-size: 1.7rem;
+    }
+
+    .auth-forms-viewport {
+        height: 294px;
+    }
+
+    .manga-input {
+        font-size: 16px;
+        padding: 10px 12px;
+    }
+
+    .login-clean-headline {
+        font-size: clamp(13px, 4.2vw, 20px);
+        line-height: 1.25;
+    }
+
+    .login-clean-headline .line {
+        white-space: normal;
+    }
+}

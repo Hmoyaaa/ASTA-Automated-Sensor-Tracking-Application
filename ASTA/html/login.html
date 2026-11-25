@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#050102">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" type="image/png" href="../assets/img/clover_logo.png?v=2">
+    <link rel="apple-touch-icon" href="../assets/img/clover_logo.png?v=2">
+    <title>Automated Sensor Tracking Application — A.S.T.A.</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://db.onlinewebfonts.com/c/8cb707a9b8a73f8a7403336b861c3074?family=BubbledotICG-FinePos" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="../css/variables.css?v=35">
+    <link rel="stylesheet" href="../css/animations.css?v=35">
+    <link rel="stylesheet" href="../css/auth.css?v=35">
+</head>
+<body>
+    <!-- FONDO: VIDEO CLOUDFRONT + LAS 4 ESPADAS DE ASTA EN ESTILO MANGA ROJO Y NEGRO -->
+    <div class="bg">
+        <video class="bg-video" autoplay muted loop playsinline>
+            <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260809_012548_ef22562c-c0ae-4816-ad9d-f8922af4e6a7.mp4" type="video/mp4">
+        </video>
+        <div class="bg-manga-swords"></div>
+        <div class="bg-screentone"></div>
+    </div>
+    <canvas id="antimagic-particles"></canvas>
+
+    <div class="login-page-viewport">
+        <!-- TARJETA VERTICAL ÚNICA CENTRADA (TEXTOS CENTRADOS Y TRANSICIÓN SUAVE) -->
+        <main class="hero-grimoire-section">
+            <section class="auth-glass-card" id="asta-auth-card">
+                <!-- Emblema del Trébol de 5 Hojas + Marca A.S.T.A. -->
+                <div class="auth-card-brand">
+                    <div class="auth-clover-badge">
+                        <img src="../assets/img/clover_logo.png?v=2" alt="A.S.T.A. Logo" class="auth-clover-logo-img" onerror="this.src='../assets/img/clover_logo_ref.jpg'">
+                    </div>
+                    <h2 class="auth-brand-title">A.S.T.A.</h2>
+                    <p class="auth-brand-subtitle">Crea una cuenta o inicia sesión para guardar todo tu progreso</p>
+                </div>
+
+                <!-- Selector Píldora (Iniciar Sesión / Crear Cuenta) -->
+                <div class="auth-tabs" role="tablist">
+                    <button type="button" class="auth-tab-btn active" data-tab="login" role="tab" aria-selected="true">
+                        Iniciar Sesión
+                    </button>
+                    <button type="button" class="auth-tab-btn" data-tab="register" role="tab" aria-selected="false">
+                        Crear Cuenta
+                    </button>
+                </div>
+
+                <!-- Viewport de Altura Fija con Textos Centrados y Botón Anclado -->
+                <div class="auth-forms-viewport">
+                    <!-- Formulario 1: Inicio de Sesión -->
+                    <form id="login-form" class="auth-form active" autocomplete="on">
+                        <div class="auth-fields-stack">
+                            <div class="form-group">
+                                <label for="login-identifier">Usuario o Correo Electrónico</label>
+                                <input type="text" id="login-identifier" class="manga-input" placeholder="Tu usuario o correo registrado" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="login-password">Contraseña</label>
+                                <input type="password" id="login-password" class="manga-input" placeholder="••••••••••••" required>
+                            </div>
+                        </div>
+                        <button type="submit" id="btn-login-submit" class="cta-glow-pill auth-submit-btn">
+                            Iniciar Sesión
+                        </button>
+                    </form>
+
+                    <!-- Formulario 2: Crear Cuenta -->
+                    <form id="register-form" class="auth-form" autocomplete="on">
+                        <div class="auth-fields-stack">
+                            <div class="form-group">
+                                <label for="reg-username">Usuario</label>
+                                <input type="text" id="reg-username" class="manga-input" placeholder="Tu nombre de usuario" minlength="3" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="reg-email">Correo Electrónico</label>
+                                <input type="email" id="reg-email" class="manga-input" placeholder="correo@dominio.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="reg-password">Contraseña</label>
+                                <input type="password" id="reg-password" class="manga-input" placeholder="Mínimo 6 caracteres" minlength="6" required>
+                            </div>
+                        </div>
+                        <button type="submit" id="btn-register-submit" class="cta-glow-pill auth-submit-btn">
+                            Crear Cuenta y Guardar Progreso
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Aviso de cuenta obligatoria con botón rápido para alternar pestaña -->
+                <div class="auth-account-notice">
+                    <span id="auth-notice-text">¿Es tu primera vez aquí? Es obligatorio contar con una cuenta registrada.</span>
+                    <button type="button" id="btn-switch-auth-mode" class="auth-switch-link-btn">
+                        Crear una cuenta nueva →
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <!-- PIE DE PÁGINA CON EL TÍTULO EN UN SOLO PÁRRAFO -->
+        <footer class="login-bottom-title-bar">
+            <h1 class="dot-headline login-clean-headline">
+                <span class="line">Automated Sensor Tracking Application</span>
+            </h1>
+        </footer>
+    </div>
+
+    <script src="../js/particles.js?v=35"></script>
+    <script src="../js/auth.js?v=35"></script>
+</body>
+</html>
